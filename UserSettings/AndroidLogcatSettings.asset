@@ -2,46 +2,142 @@
     "m_SelectedDeviceId": "R3CMA058EFJ",
     "m_SelectedPackage": {
         "deviceId": "R3CMA058EFJ",
-        "name": "com.DefaultCompany.GPSLogger",
-        "processId": 20961,
+        "name": "com.natris.gpslogger",
+        "processId": 9127,
         "exited": false
     },
     "m_SelectedPriority": 0,
     "m_KnownPackagesForSerialization": [
         {
             "deviceId": "R3CMA058EFJ",
-            "name": "com.sec.android.app.launcher",
-            "processId": 3011,
+            "name": "com.natris.gpslogger",
+            "processId": 24181,
             "exited": true
         },
         {
             "deviceId": "R3CMA058EFJ",
-            "name": "com.DefaultCompany.GPSLogger",
-            "processId": 12174,
+            "name": "com.natris.gpslogger",
+            "processId": 24698,
             "exited": true
         },
         {
             "deviceId": "R3CMA058EFJ",
-            "name": "com.DefaultCompany.GPSLogger",
-            "processId": 14799,
+            "name": "com.natris.gpslogger",
+            "processId": 26132,
             "exited": true
         },
         {
             "deviceId": "R3CMA058EFJ",
-            "name": "com.DefaultCompany.GPSLogger",
-            "processId": 18583,
+            "name": "com.natris.gpslogger",
+            "processId": 26622,
             "exited": true
         },
         {
             "deviceId": "R3CMA058EFJ",
-            "name": "com.DefaultCompany.GPSLogger",
-            "processId": 19633,
+            "name": "com.natris.gpslogger",
+            "processId": 28453,
             "exited": false
         },
         {
             "deviceId": "R3CMA058EFJ",
-            "name": "com.DefaultCompany.GPSLogger",
-            "processId": 20961,
+            "name": "com.natris.gpslogger",
+            "processId": 28989,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 29307,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 29650,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 29941,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 30263,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 30604,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 31092,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 10680,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 14360,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 15041,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 15739,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 16201,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 16650,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 19275,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 8584,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CMA058EFJ",
+            "name": "com.natris.gpslogger",
+            "processId": 9127,
+            "exited": false
+        },
+        {
+            "deviceId": "R3CN20860MD",
+            "name": "com.natris.gpslogger",
+            "processId": 6316,
             "exited": false
         }
     ],

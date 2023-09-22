@@ -7,24 +7,24 @@ using System;
 
 public class CellGeoData : MonoBehaviour
 {
-    public int mSequence;
-    public STGeoLogData mData;
+    public int index;
+    public List<STGeoData> data;
 
     public Action<CellGeoData> ACTION_ON_CLICK;
     public Button buttonCell;
     public TextMeshProUGUI textSequence;
 
 
-    public void SetData ( int _seq, STGeoLogData _data )
+    public void SetData ( int _index, List<STGeoData> _data )
     {
-        mSequence = _seq;
-        mData = _data;
+        index = _index;
+        data = _data;
     }
 
 
     protected void Start()
     {
-        textSequence.text = string.Format("{0}", mSequence);
+        textSequence.text = string.Format("{0}", index);
         buttonCell.onClick.AddListener(onClickThis);
     }
 
