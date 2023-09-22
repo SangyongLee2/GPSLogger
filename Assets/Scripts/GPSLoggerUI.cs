@@ -8,6 +8,7 @@ public class GPSLoggerUI : MonoBehaviour
 {
     public TextMeshProUGUI textStatus;
     public TextMeshProUGUI textSeq;
+    public TextMeshProUGUI textDeviceID;
 
     public TextMeshProUGUI textTimestamp;
     public TextMeshProUGUI textGeocoord;
@@ -36,7 +37,14 @@ public class GPSLoggerUI : MonoBehaviour
         buttonPre.onClick.AddListener(onClickPre);
         buttonNext.onClick.AddListener(onClickNext);
 
+        drawUI();
         DrawLogging();
+    }
+
+
+    protected void drawUI()
+    {
+        textDeviceID.text = SystemInfo.deviceUniqueIdentifier;
     }
 
 

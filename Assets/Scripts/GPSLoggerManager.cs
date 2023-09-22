@@ -73,10 +73,13 @@ public class GPSLoggerManager : MonoBehaviour
 
     protected void createLogData ( List<STGeoData> _data )
     {
-        int index = gpsLoggerStorage.Add(_data);
-        gpsLoggerUI.CreateLogData(index, _data);
+        if (_data.Count > 0)
+        {
+            int index = gpsLoggerStorage.Add(_data);
+            gpsLoggerUI.CreateLogData(index, _data);
 
-        SetLogData(index, _data);
+            SetLogData(index, _data);
+        }
     }
 
 
@@ -87,15 +90,12 @@ public class GPSLoggerManager : MonoBehaviour
             return;
         }
 
-        if ( _data.Count > 0 )
-        {
-            gpsLoggerMap.Create(_data);
+        gpsLoggerMap.Create(_data);
 
-            mCurrentLogIndex = _index;
-            mLogDataTargetIndex = 0;
-            mLogDataTargetIndexMax = _data.Count;
-            drawDataTarget();
-        }
+        mCurrentLogIndex = _index;
+        mLogDataTargetIndex = 0;
+        mLogDataTargetIndexMax = _data.Count;
+        drawDataTarget();
     }
 
 
