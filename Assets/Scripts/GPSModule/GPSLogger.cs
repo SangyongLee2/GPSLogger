@@ -20,6 +20,8 @@ public class GPSLogger
 
         mGPSModule = _module;
         mGPSModule.ACTION_GPS_GEODATA += onActionGpsData;
+
+        //Test();
     }
 
 
@@ -96,21 +98,21 @@ public class GPSLogger
     }
 
 
-    //protected void Test()
-    //{
-    //    double lat = 37.52642;
-    //    double lng = 126.92681;
+    protected void Test()
+    {
+        double lat = 37.52642;
+        double lng = 126.92681;
 
-    //    for ( int i = 0; i < 1000; i++ )
-    //    {
-    //        int ranLat = UnityEngine.Random.Range(-20, 20);
-    //        int ranLng = UnityEngine.Random.Range(-20, 20);
+        for (int i = 0; i < 1000; i++)
+        {
+            int ranLat = UnityEngine.Random.Range(-20, 20);
+            int ranLng = UnityEngine.Random.Range(-20, 20);
 
-    //        lat += 0.00001f * ranLat;
-    //        lng += 0.00001f * ranLng;
+            lat += 0.00001f * ranLat;
+            lng += 0.00001f * ranLng;
 
-    //        STGeoData data = new STGeoData(0, i, lat, lng, 0, 0, 0, 0, 0);
-    //        mLogs.Add(data);
-    //    }
-    //}
+            STGeoData data = new STGeoData(0, i, lat, lng, 0, 0, 0, 0, 0);
+            mLogs.Add(data);
+        }
+    }
 }

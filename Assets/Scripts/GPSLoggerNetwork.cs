@@ -75,10 +75,13 @@ public struct STAPIInfo
 
 
 public delegate void CallbackResponse(object _data);
+public delegate void NetworkError(string _error);
 
 
 public class GPSLoggerNetwork : MonoBehaviour
 {
+    public NetworkError ON_NETWORK_ERROR;
+
     //protected const string CONST_BASE_URI = "http://192.168.0.170:{0}{1}";
     //protected const int CONST_PORT = 8080;
     protected const string CONST_BASE_URI = "https://ilcggps.idess.kr:{0}{1}";
@@ -175,6 +178,11 @@ public class GPSLoggerNetwork : MonoBehaviour
         else
         {
             Debug.Log(req.error);
+
+            if ( ON_NETWORK_ERROR != null && ON_NETWORK_ERROR.GetInvocationList().Length > 0 )
+            {
+                ON_NETWORK_ERROR(req.error);
+            }            
         }
     }
 
@@ -196,7 +204,12 @@ public class GPSLoggerNetwork : MonoBehaviour
         }
         else
         {
-            Debug.Log(req.error);
+            Debug.Log(req.error); 
+
+            if ( ON_NETWORK_ERROR != null && ON_NETWORK_ERROR.GetInvocationList().Length > 0 )
+            {
+                ON_NETWORK_ERROR(req.error);
+            }
         }
     }
 }

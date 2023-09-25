@@ -78,6 +78,7 @@
     <Compile Include="Assets\Scripts\GPSModule\GPSModule.cs" />
     <Compile Include="Assets\Scripts\GPSLoggerUI.cs" />
     <Compile Include="Assets\Scripts\GPSLoggerNetwork.cs" />
+    <Compile Include="Assets\Scripts\PopupUploadResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

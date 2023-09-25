@@ -27,6 +27,7 @@ public class GPSLoggerUI : MonoBehaviour
     public Button buttonNext;
 
     public Transform transformLogs;
+    public PopupUploadResult popupUploadResult;
 
     protected STGeoData mCurrentGeoData;
 
@@ -36,6 +37,7 @@ public class GPSLoggerUI : MonoBehaviour
         buttonUpload.onClick.AddListener(onClickUpload);
         buttonPre.onClick.AddListener(onClickPre);
         buttonNext.onClick.AddListener(onClickNext);
+        popupUploadResult.gameObject.SetActive(false);
 
         drawUI();
         DrawLogging();
@@ -48,13 +50,20 @@ public class GPSLoggerUI : MonoBehaviour
     }
 
 
-    public void CreateLogData ( int _index, List<STGeoData> _data )
+    public void CreateLogData ( int _index )
     {
         GameObject go = Resources.Load("Prefabs/CellGeoData") as GameObject;
         CellGeoData cell = Instantiate(go, transformLogs).GetComponent<CellGeoData>();
 
-        cell.SetData(_index, _data);
+        cell.SetData(_index);
         cell.ACTION_ON_CLICK = onActionClickCellGeoData;
+    }
+
+
+    public void OpenPopupUploadResult ( string _res )
+    {
+        popupUploadResult.gameObject.SetActive(true);
+        popupUploadResult.SetReult(_res);
     }
 
 
@@ -121,7 +130,7 @@ public class GPSLoggerUI : MonoBehaviour
 
     protected void onActionClickCellGeoData ( CellGeoData _cell )
     {
-        GPSLoggerManager.Instance.SetLogData(_cell.index, _cell.data);
+        GPSLoggerManager.Instance.SetLogData(_cell.index);
     }
 
 

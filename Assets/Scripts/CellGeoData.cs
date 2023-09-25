@@ -8,17 +8,15 @@ using System;
 public class CellGeoData : MonoBehaviour
 {
     public int index;
-    public List<STGeoData> data;
 
     public Action<CellGeoData> ACTION_ON_CLICK;
     public Button buttonCell;
     public TextMeshProUGUI textSequence;
 
 
-    public void SetData ( int _index, List<STGeoData> _data )
+    public void SetData ( int _index )
     {
         index = _index;
-        data = _data;
     }
 
 

@@ -46,11 +46,21 @@ public class GPSLoggerManager : MonoBehaviour
         gpsLoggerStorage = new GPSLoggerDataStorage();
         gpsLogger = new GPSLogger(gpsModule);
 
+        network.ON_NETWORK_ERROR += gpsLoggerUI.OpenPopupUploadResult;
+
         gpsLogger.ACTION_LOG_GEO_DATA += OnActionLogGPSData;
         gpsModule.ACTION_GPS_GEODATA += OnActionGPSData;
         gpsModule.ACTION_GPS_STATUS += OnActionGPSStatus;
 
         gpsModule.StartGPS();
+    }
+
+
+    protected void Start()
+    {
+        //Test
+        //List<STGeoData> data = gpsLogger.Get();
+        //createLogData(data);
     }
 
 
@@ -73,28 +83,35 @@ public class GPSLoggerManager : MonoBehaviour
 
     protected void createLogData ( List<STGeoData> _data )
     {
+        mCurrentLogIndex = -1;
+
         if (_data.Count > 0)
         {
-            int index = gpsLoggerStorage.Add(_data);
-            gpsLoggerUI.CreateLogData(index, _data);
+            Debug.Log("Add Data");
 
-            SetLogData(index, _data);
+            int index = gpsLoggerStorage.Add(_data);
+            gpsLoggerUI.CreateLogData(index);
+
+            SetLogData(index);
         }
     }
 
 
-    public void SetLogData ( int _index, List<STGeoData> _data )
+    public void SetLogData ( int _index )
     {
         if ( isLogging || mCurrentLogIndex == _index )
         {
             return;
         }
 
-        gpsLoggerMap.Create(_data);
+        Debug.Log("Set Log Data " + _index);
+
+        List<STGeoData> storageData = gpsLoggerStorage.Get(_index);
+        gpsLoggerMap.Create(storageData);
 
         mCurrentLogIndex = _index;
         mLogDataTargetIndex = 0;
-        mLogDataTargetIndexMax = _data.Count;
+        mLogDataTargetIndexMax = storageData.Count;
         drawDataTarget();
     }
 
@@ -112,10 +129,12 @@ public class GPSLoggerManager : MonoBehaviour
 
     public void Upload()
     {
-        if ( isLogging )
+        if ( isLogging || mCurrentLogIndex < 0 )
         {
             return;
         }
+
+        Debug.Log("Upload data " + mCurrentLogIndex);
 
         List<STGeoData> data = gpsLoggerStorage.Get(mCurrentLogIndex);
         network.RequestSave(data, onResponseUpload);
@@ -124,7 +143,7 @@ public class GPSLoggerManager : MonoBehaviour
 
     protected void onResponseUpload ( object _data )
     {
-
+        gpsLoggerUI.OpenPopupUploadResult("Upload Succeed");
     }
 
 
