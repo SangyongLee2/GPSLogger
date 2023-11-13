@@ -1,6 +1,10 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
+#if PLATFORM_ANDROID
+using UnityEngine.Android;
+#endif
+
 public class NativeGPSPlugin : MonoBehaviour
 {
     static NativeGPSPlugin instance = null;
@@ -39,10 +43,10 @@ public class NativeGPSPlugin : MonoBehaviour
                 #if UNITY_ANDROID
 
 				if(Application.platform == RuntimePlatform.Android)
-					obj = new AndroidJavaClass("com.marcinkulwicki.localetools.Main");
+                    obj = new AndroidJavaClass("com.natris.locationservice.Main");
 
-				#endif
-			}
+#endif
+            }
 		
 			return instance; 
 		}
@@ -60,26 +64,28 @@ public class NativeGPSPlugin : MonoBehaviour
 	{
         Instance.Awake();
 
-        if(!Input.location.isEnabledByUser)
-		{
-			Debug.Log ("Location service disabled");
-			return false;
-		}
-
-        #if UNITY_IOS
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             startLocation();
         }
 
-        #elif UNITY_ANDROID
-        
-        if(Application.platform == RuntimePlatform.Android)
+#elif UNITY_ANDROID
+
+
+        if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+        {
+            PermissionCallbacks callback = new PermissionCallbacks();
+            callback.PermissionGranted += (st) => { obj.CallStatic("startLocation"); };
+
+            Permission.RequestUserPermission(Permission.FineLocation, callback);
+        }
+        else
         {
             obj.CallStatic("startLocation");
         }
-        
+
         #endif
 
         return true;
@@ -97,11 +103,10 @@ public class NativeGPSPlugin : MonoBehaviour
         }
 
 #elif UNITY_ANDROID
-        
-            return 0;
+
+        return (long)Get(NativeAndroidFunction.GET_TIMESTAMP);
 #endif
 
-        return 0;
     }
 
     public static double GetLongitude()
@@ -230,11 +235,31 @@ public class NativeGPSPlugin : MonoBehaviour
         return 0;
     }
 
-#endregion
 
-#region Android functions
-    #if UNITY_ANDROID
-    
+    public static float GetAngle()
+    {
+#if UNITY_IOS
+
+        if(Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            return 0;
+        }
+
+#elif UNITY_ANDROID
+
+        return (float)Get(NativeAndroidFunction.GET_ANGLE) * Mathf.Rad2Deg;
+
+#endif
+
+        return 0;
+    }
+
+
+    #endregion
+
+    #region Android functions
+#if UNITY_ANDROID
+
     private static object Get(NativeAndroidFunction functionName)
     {
         Instance.Awake();
@@ -268,6 +293,10 @@ public class NativeGPSPlugin : MonoBehaviour
 
                 case NativeAndroidFunction.GET_VERTICAL_ACCURACY_METERS:
                     return obj.CallStatic<float>("getVerticalAccuracyMeters");
+                case NativeAndroidFunction.GET_TIMESTAMP:
+                    return obj.CallStatic<long>("getTimestamp");
+                case NativeAndroidFunction.GET_ANGLE:
+                    return obj.CallStatic<float>("getAngle");
             }
         }
 
@@ -283,6 +312,8 @@ public class NativeGPSPlugin : MonoBehaviour
         GET_SPEED,
         GET_SPEED_ACCURACY_METERS_PER_SECOND,
         GET_VERTICAL_ACCURACY_METERS,
+        GET_TIMESTAMP,
+        GET_ANGLE,
     }
     #endif
 #endregion

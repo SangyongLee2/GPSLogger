@@ -41,6 +41,18 @@ public class GPSLoggerUI : MonoBehaviour
 
         drawUI();
         DrawLogging();
+
+        StartCoroutine(IE_Test());
+    }
+
+
+    protected IEnumerator IE_Test()
+    {
+        while ( true )
+        {
+            textAccSpeed.text = string.Format("{0}", NativeGPSPlugin.GetAngle() * Mathf.Rad2Deg);
+            yield return null;
+        }
     }
 
 
@@ -158,7 +170,7 @@ public class GPSLoggerUI : MonoBehaviour
         textAltitude.text = string.Format("{0}", _data.alt);
         textSpeed.text = string.Format("{0}", _data.speed);
         textAccGeocoord.text = string.Format("{0}, {1}", _data.acc, _data.accV);
-        textAccSpeed.text = string.Format("{0}", _data.accS);
+        //textAccSpeed.text = string.Format("{0}", _data.accS);
         textTimeGap.text = string.Format("{0}", timeGap);
         textPosGap.text = string.Format("{0}, {1}", posGapH, posGapV);
     }
