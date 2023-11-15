@@ -156,7 +156,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.natris.gpslogger
     Standalone: com.natris.gpslogger
-    iPhone: com.DefaultCompany.GPSLogger
+    iPhone: com.natris.gpslogger
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -177,7 +177,7 @@ PlayerSettings:
   keepLoadedShadersAlive: 0
   StripUnusedMeshComponents: 1
   VertexChannelCompressionMask: 4054
-  iPhoneSdkVersion: 989
+  iPhoneSdkVersion: 988
   iOSTargetOSVersionString: 11.0
   tvOSSdkVersion: 0
   tvOSRequireExtendedGameController: 0

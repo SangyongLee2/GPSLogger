@@ -50,7 +50,8 @@ public class GPSLoggerUI : MonoBehaviour
     {
         while ( true )
         {
-            textAccSpeed.text = string.Format("{0}", NativeGPSPlugin.GetAngle() * Mathf.Rad2Deg);
+            textAccSpeed.text = string.Format("{0}", NativeGPSPlugin.GetHeading());
+            textTimeGap.text = string.Format("{0}", NativeGPSPlugin.GetHeadingAccuracy());
             yield return null;
         }
     }
@@ -171,7 +172,7 @@ public class GPSLoggerUI : MonoBehaviour
         textSpeed.text = string.Format("{0}", _data.speed);
         textAccGeocoord.text = string.Format("{0}, {1}", _data.acc, _data.accV);
         //textAccSpeed.text = string.Format("{0}", _data.accS);
-        textTimeGap.text = string.Format("{0}", timeGap);
+        //\textTimeGap.text = string.Format("{0}", timeGap);
         textPosGap.text = string.Format("{0}, {1}", posGapH, posGapV);
     }
 }

@@ -1,7 +1,7 @@
 #import "LocaleTools.h"
 
 double latitude, longitude, altitude, timestamp;
-float accuracy, verticalAccuracy, speed, speedAccuracy;
+float accuracy, verticalAccuracy, speed, speedAccuracy, heading, headingAccuracy;
 
 @implementation LocaleTools
 
@@ -9,17 +9,32 @@ CLLocationManager *locationManager;
 
 - (LocaleTools *)init
 {
+    
+    printf("Location Start");
+    
+    
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
     locationManager.distanceFilter = kCLDistanceFilterNone;
     locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-
+    locationManager.headingFilter = kCLHeadingFilterNone;
+    
     if([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
         [locationManager requestWhenInUseAuthorization];
 
     [locationManager startUpdatingLocation];
+    [locationManager startUpdatingHeading];
 
     return self;
+}
+
+- (void)stop
+{
+    printf("Location End");
+    
+    [locationManager stopUpdatingLocation];
+    [locationManager stopUpdatingHeading];
+    locationManager = NULL;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
@@ -37,6 +52,13 @@ CLLocationManager *locationManager;
     
     speed = location.speed;
     speedAccuracy = location.speedAccuracy;
+
+}
+
+- (void)locationManager:(CLLocationManager *) manager didUpdateHeading: (CLHeading *)headingV;
+{
+    heading = headingV.trueHeading;
+    headingAccuracy = headingV.headingAccuracy;
 }
 
 @end
@@ -50,6 +72,15 @@ extern "C"
         if(localeDelegate == NULL) localeDelegate = [[LocaleTools alloc] init];
     }
 
+
+    void stopLocation()
+    {
+        if ( localeDelegate == NULL ) { return; }
+        
+        [[LocaleTools alloc] stop];
+        localeDelegate = NULL;
+    }
+                      
 
     double getTimestamp()
     {
@@ -91,4 +122,15 @@ extern "C"
     {
         return speedAccuracy;
     }
+
+    float getHeading()
+    {
+        return heading;
+    }
+
+    float getHeadingAccuracy()
+    {
+        return headingAccuracy;
+    }
+
 }

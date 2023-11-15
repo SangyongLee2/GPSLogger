@@ -15,9 +15,10 @@ public class NativeGPSPlugin : MonoBehaviour
 
 #endif
 
-#region Dll imports for iOS
-    #if UNITY_IOS
+    #region Dll imports for iOS
+#if UNITY_IOS
     [DllImport("__Internal")] private static extern void startLocation();
+    [DllImport("__Internal")] private static extern void stopLocation();
     [DllImport("__Internal")] private static extern double getTimestamp();
     [DllImport("__Internal")] private static extern double getLongitude();
     [DllImport("__Internal")] private static extern double getLatitude();
@@ -26,10 +27,13 @@ public class NativeGPSPlugin : MonoBehaviour
     [DllImport("__Internal")] private static extern float getVerticalAccuracyMeters();
     [DllImport("__Internal")] private static extern float getSpeed();
     [DllImport("__Internal")] private static extern float getSpeedAccuracy();
-    #endif
-#endregion
+    [DllImport("__Internal")] private static extern float getHeading();
+    [DllImport("__Internal")] private static extern float getHeadingAccuracy();
 
-#region Init Singleton
+#endif
+    #endregion
+
+    #region Init Singleton
     public static NativeGPSPlugin Instance 
 	{
 		get 
@@ -91,7 +95,25 @@ public class NativeGPSPlugin : MonoBehaviour
         return true;
 	}
 
-#region Getting GPS properties
+
+    public static void StopLocation()
+    {
+#if UNITY_IOS
+
+        if(Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            stopLocation();
+        }
+
+#elif UNITY_ANDROID
+
+        obj.CallStatic("stopLocation");
+
+#endif
+    }
+
+
+    #region Getting GPS properties
 
     public static double GetTimestamp()
     {
@@ -106,6 +128,8 @@ public class NativeGPSPlugin : MonoBehaviour
 
         return (long)Get(NativeAndroidFunction.GET_TIMESTAMP);
 #endif
+
+        return 0;
 
     }
 
@@ -236,19 +260,36 @@ public class NativeGPSPlugin : MonoBehaviour
     }
 
 
-    public static float GetAngle()
+    public static float GetHeading()
     {
 #if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
-            return 0;
+            return getHeading();
         }
 
 #elif UNITY_ANDROID
 
-        return (float)Get(NativeAndroidFunction.GET_ANGLE) * Mathf.Rad2Deg;
+        return (float)Get(NativeAndroidFunction.GET_ANGLE) * Mathf.Rad2Deg + 180.0f;
 
+#endif
+
+        return 0;
+    }
+
+    public static float GetHeadingAccuracy()
+    {
+#if UNITY_IOS
+
+        if(Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            return getHeadingAccuracy();
+        }
+
+#elif UNITY_ANDROID
+
+        return 0;
 #endif
 
         return 0;
@@ -315,6 +356,6 @@ public class NativeGPSPlugin : MonoBehaviour
         GET_TIMESTAMP,
         GET_ANGLE,
     }
-    #endif
-#endregion
+#endif
+    #endregion
 }
