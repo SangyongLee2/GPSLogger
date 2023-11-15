@@ -271,7 +271,15 @@ public class NativeGPSPlugin : MonoBehaviour
 
 #elif UNITY_ANDROID
 
-        return (float)Get(NativeAndroidFunction.GET_ANGLE) * Mathf.Rad2Deg + 180.0f;
+        float v = (float)Get(NativeAndroidFunction.GET_HEADING) * Mathf.Rad2Deg;
+
+        //Convert 0 to 360
+        if ( v < 0 )
+        {
+            v += 360;
+        }
+
+        return v;
 
 #endif
 
@@ -289,7 +297,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
 #elif UNITY_ANDROID
 
-        return 0;
+        return (int)Get(NativeAndroidFunction.GET_HEADING_ACCURACY);
 #endif
 
         return 0;
@@ -336,8 +344,10 @@ public class NativeGPSPlugin : MonoBehaviour
                     return obj.CallStatic<float>("getVerticalAccuracyMeters");
                 case NativeAndroidFunction.GET_TIMESTAMP:
                     return obj.CallStatic<long>("getTimestamp");
-                case NativeAndroidFunction.GET_ANGLE:
-                    return obj.CallStatic<float>("getAngle");
+                case NativeAndroidFunction.GET_HEADING:
+                    return obj.CallStatic<float>("getHeading");
+                case NativeAndroidFunction.GET_HEADING_ACCURACY:
+                    return obj.CallStatic<int>("getHeadingAccuracy");
             }
         }
 
@@ -354,7 +364,8 @@ public class NativeGPSPlugin : MonoBehaviour
         GET_SPEED_ACCURACY_METERS_PER_SECOND,
         GET_VERTICAL_ACCURACY_METERS,
         GET_TIMESTAMP,
-        GET_ANGLE,
+        GET_HEADING,
+        GET_HEADING_ACCURACY,
     }
 #endif
     #endregion
