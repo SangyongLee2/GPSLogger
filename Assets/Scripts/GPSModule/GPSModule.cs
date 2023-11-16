@@ -98,17 +98,21 @@ public class GPSModule : MonoBehaviour
 
         SetGPSStatus(eGPSStatus.INITIALIZING);
 
-        mLocationServiceIsReady = NativeGPSPlugin.StartLocation();
+        NativeGPSPlugin.StartLocation();
+        mLocationServiceIsReady = NativeGPSPlugin.HasUserAuthorize();
 
-        if ( mLocationServiceIsReady == false )
+        yield return new WaitForSeconds(0.1f);
+
+
+        if (mLocationServiceIsReady == false)
         {
             SetGPSStatus(eGPSStatus.FAILED);
             yield break;
         }
-
-        yield return new WaitForSeconds(0.1f);
-       
-        SetGPSStatus(eGPSStatus.RUNNING);
+        else
+        {
+            SetGPSStatus(eGPSStatus.RUNNING);
+        }        
 
         while (mLocationServiceIsReady)
         {
@@ -124,7 +128,12 @@ public class GPSModule : MonoBehaviour
         if ( mLocationServiceIsReady == true )
         {
 
-            long timeStamp = (long)NativeGPSPlugin.GetTimestamp();
+            if ( NativeGPSPlugin.IsEnableGPS() == false )
+            {
+                return;
+            }
+
+            long timeStamp = NativeGPSPlugin.GetTimestamp();
             double lat = NativeGPSPlugin.GetLatitude();
             double lng = NativeGPSPlugin.GetLongitude();
             double alt = NativeGPSPlugin.GetAltitude();

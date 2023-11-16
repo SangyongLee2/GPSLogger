@@ -75,8 +75,6 @@ public class GPSLoggerManager : MonoBehaviour
         }
         else
         {
-            NativeGPSPlugin.StopLocation();
-
             gpsLogger.Clear();
             gpsLoggerMap.Clear();
         }

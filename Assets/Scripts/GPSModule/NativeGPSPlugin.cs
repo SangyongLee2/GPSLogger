@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
+using System;
 
 #if PLATFORM_ANDROID
 using UnityEngine.Android;
@@ -64,13 +65,13 @@ public class NativeGPSPlugin : MonoBehaviour
 	}
 #endregion
 
-    public static bool StartLocation()
+    public static void StartLocation()
 	{
         Instance.Awake();
 
 #if UNITY_IOS
 
-        if(Application.platform == RuntimePlatform.IPhonePlayer)
+        if ( Application.platform == RuntimePlatform.IPhonePlayer )
         {
             startLocation();
         }
@@ -78,7 +79,7 @@ public class NativeGPSPlugin : MonoBehaviour
 #elif UNITY_ANDROID
 
 
-        if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+        if ( HasUserAuthorize() == false )
         {
             PermissionCallbacks callback = new PermissionCallbacks();
             callback.PermissionGranted += (st) => { obj.CallStatic("startLocation"); };
@@ -92,7 +93,6 @@ public class NativeGPSPlugin : MonoBehaviour
 
         #endif
 
-        return true;
 	}
 
 
@@ -113,9 +113,49 @@ public class NativeGPSPlugin : MonoBehaviour
     }
 
 
+    public static bool HasUserAuthorize()
+    {
+#if UNITY_IOS
+
+        return true;
+
+#elif UNITY_ANDROID
+
+        bool authorize = Permission.HasUserAuthorizedPermission(Permission.FineLocation);
+
+        return authorize;
+
+#endif
+
+        return false;
+    }
+
+
+    public static bool IsEnableGPS()
+    {
+#if UNITY_IOS
+
+        return true;
+
+#elif UNITY_ANDROID
+
+        int gps = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS_GPS);
+        int network = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS_NETWORK);
+        int passive = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS_PASSIVE);
+
+        Debug.Log("Gps = " + gps + " / Network = " + network + " / Passive = " + passive);
+
+        int res = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS);
+        return res == 1;
+#endif
+
+        return false;
+    }
+
+
     #region Getting GPS properties
 
-    public static double GetTimestamp()
+    public static long GetTimestamp()
     {
 #if UNITY_IOS
 
@@ -127,6 +167,7 @@ public class NativeGPSPlugin : MonoBehaviour
 #elif UNITY_ANDROID
 
         return (long)Get(NativeAndroidFunction.GET_TIMESTAMP);
+
 #endif
 
         return 0;
@@ -348,6 +389,14 @@ public class NativeGPSPlugin : MonoBehaviour
                     return obj.CallStatic<float>("getHeading");
                 case NativeAndroidFunction.GET_HEADING_ACCURACY:
                     return obj.CallStatic<int>("getHeadingAccuracy");
+                case NativeAndroidFunction.GET_ENABLE_GPS:
+                    return obj.CallStatic<int>("getEnableGps");
+                case NativeAndroidFunction.GET_ENABLE_GPS_GPS:
+                    return obj.CallStatic<int>("getEnableGpsGps");
+                case NativeAndroidFunction.GET_ENABLE_GPS_NETWORK:
+                    return obj.CallStatic<int>("getEnableGpsNetwork");
+                case NativeAndroidFunction.GET_ENABLE_GPS_PASSIVE:
+                    return obj.CallStatic<int>("getEnableGpsPassive");
             }
         }
 
@@ -366,6 +415,10 @@ public class NativeGPSPlugin : MonoBehaviour
         GET_TIMESTAMP,
         GET_HEADING,
         GET_HEADING_ACCURACY,
+        GET_ENABLE_GPS,
+        GET_ENABLE_GPS_GPS,
+        GET_ENABLE_GPS_NETWORK,
+        GET_ENABLE_GPS_PASSIVE,
     }
 #endif
     #endregion
