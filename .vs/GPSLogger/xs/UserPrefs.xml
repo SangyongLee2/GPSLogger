@@ -1,0 +1,16 @@
+﻿<Properties StartupConfiguration="{F414AD8A-367D-F104-EDA3-1177D188877E}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GPSModule/GPSModule.cs">
+    <Files>
+      <File FileName="Assets/Scripts/GPSLoggerDataStorage.cs" Line="34" Column="1" />
+      <File FileName="Assets/Scripts/GPSLoggerManager.cs" Line="79" Column="2" />
+      <File FileName="Assets/Scripts/GPSModule/NativeGPSPlugin.cs" Line="121" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="8fc2b295-76dc-4dd1-a4ac-c2054d786132" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

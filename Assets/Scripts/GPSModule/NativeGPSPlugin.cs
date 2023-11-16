@@ -20,6 +20,8 @@ public class NativeGPSPlugin : MonoBehaviour
 #if UNITY_IOS
     [DllImport("__Internal")] private static extern void startLocation();
     [DllImport("__Internal")] private static extern void stopLocation();
+    [DllImport("__Internal")] private static extern bool hasUserAuthorize();
+    [DllImport("__Internal")] private static extern bool isEnableGps();
     [DllImport("__Internal")] private static extern double getTimestamp();
     [DllImport("__Internal")] private static extern double getLongitude();
     [DllImport("__Internal")] private static extern double getLatitude();
@@ -71,10 +73,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
 #if UNITY_IOS
 
-        if ( Application.platform == RuntimePlatform.IPhonePlayer )
-        {
-            startLocation();
-        }
+        startLocation();
 
 #elif UNITY_ANDROID
 
@@ -91,16 +90,16 @@ public class NativeGPSPlugin : MonoBehaviour
             obj.CallStatic("startLocation");
         }
 
-        #endif
+#endif
 
-	}
+    }
 
 
     public static void StopLocation()
     {
 #if UNITY_IOS
 
-        if(Application.platform == RuntimePlatform.IPhonePlayer)
+        if( Application.platform == RuntimePlatform.IPhonePlayer )
         {
             stopLocation();
         }
@@ -117,7 +116,7 @@ public class NativeGPSPlugin : MonoBehaviour
     {
 #if UNITY_IOS
 
-        return true;
+        return hasUserAuthorize();
 
 #elif UNITY_ANDROID
 
@@ -135,15 +134,10 @@ public class NativeGPSPlugin : MonoBehaviour
     {
 #if UNITY_IOS
 
-        return true;
+        bool res = isEnableGps();
+        return res;
 
 #elif UNITY_ANDROID
-
-        int gps = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS_GPS);
-        int network = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS_NETWORK);
-        int passive = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS_PASSIVE);
-
-        Debug.Log("Gps = " + gps + " / Network = " + network + " / Passive = " + passive);
 
         int res = (int)Get(NativeAndroidFunction.GET_ENABLE_GPS);
         return res == 1;
@@ -161,7 +155,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
         if (Application.platform == RuntimePlatform.IPhonePlayer)
         {
-            return getTimestamp();
+            return (long)getTimestamp();
         }
 
 #elif UNITY_ANDROID

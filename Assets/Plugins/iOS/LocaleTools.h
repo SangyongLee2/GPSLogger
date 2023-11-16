@@ -6,6 +6,8 @@
 
 - (LocaleTools *)init;
 - (void)stop;
+- (bool)hasUserAuthorize;
+- (bool)isEnableGps;
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations;
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)headingV;
 @end

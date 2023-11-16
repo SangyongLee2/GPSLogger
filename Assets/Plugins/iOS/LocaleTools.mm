@@ -61,6 +61,37 @@ CLLocationManager *locationManager;
     headingAccuracy = headingV.headingAccuracy;
 }
 
+- (bool) hasUserAuthorize
+{
+    CLAuthorizationStatus status = locationManager.authorizationStatus;
+    
+    switch (status)
+    {
+        case kCLAuthorizationStatusDenied:
+        {
+            return false;
+        }
+        case kCLAuthorizationStatusNotDetermined:
+        {
+            return false;
+        }
+        case kCLAuthorizationStatusRestricted:
+        {
+            return false;
+        }
+        default:
+        {
+            return true;
+        }
+    }
+}
+
+
+- (bool) isEnableGps
+{
+    return locationManager.locationServicesEnabled;
+}
+
 @end
 
 static LocaleTools* localeDelegate = NULL;
@@ -79,6 +110,20 @@ extern "C"
         
         [[LocaleTools alloc] stop];
         localeDelegate = NULL;
+    }
+
+    
+    bool hasUserAuthorize()
+    {
+        if ( localeDelegate == NULL ) { return false;}
+        
+        return [[LocaleTools alloc] hasUserAuthorize];
+    }
+
+    bool isEnableGps()
+    {
+        if ( localeDelegate == NULL ) { return false;}
+        return [[LocaleTools alloc] isEnableGps];
     }
                       
 
@@ -134,3 +179,4 @@ extern "C"
     }
 
 }
+
