@@ -85,6 +85,7 @@ public class GPSModule : MonoBehaviour
 
     public void StartGPS ()
     {
+        NativeGPSPlugin.Initialize();
         StartCoroutine("IE_GPSModule");
     }
 

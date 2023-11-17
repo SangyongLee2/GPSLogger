@@ -8,6 +8,7 @@ using UnityEngine.Android;
 
 public class NativeGPSPlugin : MonoBehaviour
 {
+    static bool initialized = false;
     static NativeGPSPlugin instance = null;
     static GameObject go;
 
@@ -18,6 +19,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
     #region Dll imports for iOS
 #if UNITY_IOS
+    [DllImport("__Internal")] private static extern void initialize();
     [DllImport("__Internal")] private static extern void startLocation();
     [DllImport("__Internal")] private static extern void stopLocation();
     [DllImport("__Internal")] private static extern bool hasUserAuthorize();
@@ -67,36 +69,69 @@ public class NativeGPSPlugin : MonoBehaviour
 	}
 #endregion
 
-    public static void StartLocation()
-	{
+
+    public static void Initialize()
+    {
         Instance.Awake();
+
+        Debug.Log("NativeGps : Initialize");
 
 #if UNITY_IOS
 
-        startLocation();
+        initialize();
 
 #elif UNITY_ANDROID
-
 
         if ( HasUserAuthorize() == false )
         {
             PermissionCallbacks callback = new PermissionCallbacks();
-            callback.PermissionGranted += (st) => { obj.CallStatic("startLocation"); };
+            callback.PermissionGranted += (st) => { obj.CallStatic("initialize"); };
 
             Permission.RequestUserPermission(Permission.FineLocation, callback);
         }
         else
         {
-            obj.CallStatic("startLocation");
+            obj.CallStatic("initialize");
         }
 
+    #endif
+    }
+
+
+    public static void Destroy()
+    {
+        StopLocation();
+        instance = null;
+    }
+
+
+    public static bool StartLocation()
+	{
+
+#if UNITY_IOS
+
+        startLocation();
+
+        return true;
+
+#elif UNITY_ANDROID
+
+        if ( HasUserAuthorize() == false )
+        {
+            return false;
+        }
+
+        obj.CallStatic("startLocation");
 #endif
+
+        return true;
 
     }
 
 
     public static void StopLocation()
     {
+
 #if UNITY_IOS
 
         if( Application.platform == RuntimePlatform.IPhonePlayer )
@@ -114,6 +149,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
     public static bool HasUserAuthorize()
     {
+
 #if UNITY_IOS
 
         return hasUserAuthorize();
@@ -132,6 +168,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
     public static bool IsEnableGPS()
     {
+
 #if UNITY_IOS
 
         bool res = isEnableGps();
@@ -359,22 +396,16 @@ public class NativeGPSPlugin : MonoBehaviour
             {
                 case NativeAndroidFunction.GET_LONGITUDE:
                     return obj.CallStatic<double>("getLongitude");
-
                 case NativeAndroidFunction.GET_LATITUDE:
-                    return obj.CallStatic<double>("getLatitude");
-                
+                    return obj.CallStatic<double>("getLatitude");                
                 case NativeAndroidFunction.GET_ACCURACY:
                     return obj.CallStatic<float>("getAccuracy");
-
                 case NativeAndroidFunction.GET_ALTITUDE:
                     return obj.CallStatic<double>("getAltitude");
-
                 case NativeAndroidFunction.GET_SPEED:
                     return obj.CallStatic<float>("getSpeed");
-
                 case NativeAndroidFunction.GET_SPEED_ACCURACY_METERS_PER_SECOND:
                     return obj.CallStatic<float>("getSpeedAccuracyMetersPerSecond");
-
                 case NativeAndroidFunction.GET_VERTICAL_ACCURACY_METERS:
                     return obj.CallStatic<float>("getVerticalAccuracyMeters");
                 case NativeAndroidFunction.GET_TIMESTAMP:
