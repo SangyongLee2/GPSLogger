@@ -100,7 +100,15 @@ public class NativeGPSPlugin : MonoBehaviour
 
     public static void Destroy()
     {
-        StopLocation();
+#if UNITY_IOS
+
+        destroy();
+
+#elif UNITY_ANDROID
+
+        obj.CallStatic("destroy");
+
+#endif
         instance = null;
     }
 
