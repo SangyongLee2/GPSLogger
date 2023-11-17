@@ -22,6 +22,7 @@ public class NativeGPSPlugin : MonoBehaviour
     [DllImport("__Internal")] private static extern void initialize();
     [DllImport("__Internal")] private static extern void startLocation();
     [DllImport("__Internal")] private static extern void stopLocation();
+    [DllImport("__Internal")] private static extern void destroy();
     [DllImport("__Internal")] private static extern bool hasUserAuthorize();
     [DllImport("__Internal")] private static extern bool isEnableGps();
     [DllImport("__Internal")] private static extern double getTimestamp();

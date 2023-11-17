@@ -7,12 +7,8 @@ float accuracy, verticalAccuracy, speed, speedAccuracy, heading, headingAccuracy
 
 CLLocationManager *locationManager;
 
-- (LocaleTools *)init
+- (LocaleTools *)initialize
 {
-    
-    printf("Location Start");
-    
-    
     locationManager = [[CLLocationManager alloc] init];
     locationManager.delegate = self;
     locationManager.distanceFilter = kCLDistanceFilterNone;
@@ -22,18 +18,29 @@ CLLocationManager *locationManager;
     if([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
         [locationManager requestWhenInUseAuthorization];
 
+    
+    return self;
+}
+
+- (void)startLocation
+{
+    if ( locationManager == NULL )
+    {
+        return;
+    }
+    
     [locationManager startUpdatingLocation];
     [locationManager startUpdatingHeading];
-
-    return self;
 }
 
 - (void)stop
 {
-    printf("Location End");
-    
     [locationManager stopUpdatingLocation];
     [locationManager stopUpdatingHeading];
+}
+
+- (void)destroy
+{
     locationManager = NULL;
 }
 
@@ -98,9 +105,15 @@ static LocaleTools* localeDelegate = NULL;
 
 extern "C"
 {
+    void initialize()
+    {
+        if(localeDelegate == NULL) localeDelegate = [[LocaleTools alloc] initialize];
+    }
+
     void startLocation()
     {
-        if(localeDelegate == NULL) localeDelegate = [[LocaleTools alloc] init];
+        if ( localeDelegate == NULL ) { return; }
+        [[LocaleTools alloc] startLocation];
     }
 
 
@@ -109,6 +122,15 @@ extern "C"
         if ( localeDelegate == NULL ) { return; }
         
         [[LocaleTools alloc] stop];
+    }
+
+
+    void destroy()
+    {
+        if ( localeDelegate == NULL ) { return; }
+        
+        stopLocation();
+        [[LocaleTools alloc] destroy];
         localeDelegate = NULL;
     }
 
