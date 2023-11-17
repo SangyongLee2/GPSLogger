@@ -84,15 +84,13 @@ public class GPSLoggerUI : MonoBehaviour
 
     protected void onClickNext()
     {
-        GPSLoggerManager.Instance.gpsModule.StartGPS();
-        //GPSLoggerManager.Instance.IncreaseDataTarget();
+        GPSLoggerManager.Instance.IncreaseDataTarget();
     }
 
 
     protected void onClickPre()
     {
-        NativeGPSPlugin.Destroy();
-        //GPSLoggerManager.Instance.DecreaseDataTarget();
+        GPSLoggerManager.Instance.DecreaseDataTarget();
     }
 
 
