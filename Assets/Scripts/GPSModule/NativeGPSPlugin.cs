@@ -6,14 +6,23 @@ using System;
 using UnityEngine.Android;
 #endif
 
+
+public enum eHeadingAccuracy
+{
+    DISAVAILABLE,       //유효하지 않음
+    UNRELIABLE,         //신뢰할 수 없음
+    LOW,                //낮음
+    MIDDLE,             //중간
+    HIGH,               //높음
+}
+
 public class NativeGPSPlugin : MonoBehaviour
 {
-    static bool initialized = false;
     static NativeGPSPlugin instance = null;
     static GameObject go;
 
 #if UNITY_ANDROID
-	static AndroidJavaClass obj;
+    static AndroidJavaClass obj;
 
 #endif
 
@@ -40,38 +49,38 @@ public class NativeGPSPlugin : MonoBehaviour
     #endregion
 
     #region Init Singleton
-    public static NativeGPSPlugin Instance 
-	{
-		get 
+    public static NativeGPSPlugin Instance
+    {
+        get
         {
-			if(instance == null)
-			{
-				go = new GameObject();
-				go.name = "NativeGPSPlugin";
-				instance = go.AddComponent<NativeGPSPlugin>();
+            if (instance == null)
+            {
+                go = new GameObject();
+                go.name = "NativeGPSPlugin";
+                instance = go.AddComponent<NativeGPSPlugin>();
 
-                #if UNITY_ANDROID
+#if UNITY_ANDROID
 
-				if(Application.platform == RuntimePlatform.Android)
+                if (Application.platform == RuntimePlatform.Android)
                     obj = new AndroidJavaClass("com.natris.locationservice.Main");
 
 #endif
             }
-		
-			return instance; 
-		}
-	}
-    void Awake() 
-	{
-		if (instance != null && instance != this) 
-		{
-			Destroy(this.gameObject);
-		}
-	}
-#endregion
+
+            return instance;
+        }
+    }
+    void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+    #endregion
 
 
-    public static void Initialize()
+    public static void Initialize(Action _callback)
     {
         Instance.Awake();
 
@@ -79,23 +88,41 @@ public class NativeGPSPlugin : MonoBehaviour
 
 #if UNITY_IOS
 
-        initialize();
+            initialize();
+
+            if ( _callback != null )
+            {
+                _callback();
+            }
+            
 
 #elif UNITY_ANDROID
 
-        if ( HasUserAuthorize() == false )
+        if (HasUserAuthorize() == false)
         {
             PermissionCallbacks callback = new PermissionCallbacks();
-            callback.PermissionGranted += (st) => { obj.CallStatic("initialize"); };
+            callback.PermissionGranted += (st) =>
+            {
+                obj.CallStatic("initialize");
+
+                if (_callback != null)
+                {
+                    _callback();
+                }
+            };
 
             Permission.RequestUserPermission(Permission.FineLocation, callback);
         }
         else
         {
             obj.CallStatic("initialize");
+            if (_callback != null)
+            {
+                _callback();
+            }
         }
 
-    #endif
+#endif
     }
 
 
@@ -115,7 +142,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
 
     public static bool StartLocation()
-	{
+    {
 
 #if UNITY_IOS
 
@@ -125,7 +152,7 @@ public class NativeGPSPlugin : MonoBehaviour
 
 #elif UNITY_ANDROID
 
-        if ( HasUserAuthorize() == false )
+        if (HasUserAuthorize() == false)
         {
             return false;
         }
@@ -215,127 +242,127 @@ public class NativeGPSPlugin : MonoBehaviour
     }
 
     public static double GetLongitude()
-	{
-        #if UNITY_IOS
+    {
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             return getLongitude();
         }
 
-        #elif UNITY_ANDROID
-        
-            return (double) Get(NativeAndroidFunction.GET_LONGITUDE);
+#elif UNITY_ANDROID
 
-        #endif
+        return (double)Get(NativeAndroidFunction.GET_LONGITUDE);
+
+#endif
 
         return 0;
-	}
+    }
 
     public static double GetLatitude()
-	{
-        #if UNITY_IOS
+    {
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             return getLatitude();
         }
 
-        #elif UNITY_ANDROID
-        
-            return (double) Get(NativeAndroidFunction.GET_LATITUDE);
-        
-        #endif
+#elif UNITY_ANDROID
 
-        return 0; 
+        return (double)Get(NativeAndroidFunction.GET_LATITUDE);
+
+#endif
+
+        return 0;
     }
 
     public static float GetAccuracy()
     {
-        #if UNITY_IOS
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             return getAccuracy();
         }
 
-        #elif UNITY_ANDROID
-        
-            return (float) Get(NativeAndroidFunction.GET_ACCURACY);
-        
-        #endif
+#elif UNITY_ANDROID
+
+        return (float)Get(NativeAndroidFunction.GET_ACCURACY);
+
+#endif
 
         return 0;
     }
 
     public static double GetAltitude()
     {
-        #if UNITY_IOS
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             return getAltitude();
         }
 
-        #elif UNITY_ANDROID
-        
-            return (double) Get(NativeAndroidFunction.GET_ALTITUDE);
-        
-        #endif
+#elif UNITY_ANDROID
+
+        return (double)Get(NativeAndroidFunction.GET_ALTITUDE);
+
+#endif
 
         return 0;
     }
 
     public static float GetSpeed()
     {
-        #if UNITY_IOS
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             return getSpeed();
         }
 
-        #elif UNITY_ANDROID
-        
-            return (float) Get(NativeAndroidFunction.GET_SPEED);
-        
-        #endif
+#elif UNITY_ANDROID
+
+        return (float)Get(NativeAndroidFunction.GET_SPEED);
+
+#endif
 
         return 0;
     }
 
     public static float GetSpeedAccuracyMetersPerSecond()
     {
-        #if UNITY_IOS
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             return getSpeedAccuracy();
         }
 
-        #elif UNITY_ANDROID
-        
-            return (float) Get(NativeAndroidFunction.GET_SPEED_ACCURACY_METERS_PER_SECOND);
-        
-        #endif
+#elif UNITY_ANDROID
+
+        return (float)Get(NativeAndroidFunction.GET_SPEED_ACCURACY_METERS_PER_SECOND);
+
+#endif
 
         return 0;
     }
 
     public static float GetVerticalAccuracyMeters()
     {
-        #if UNITY_IOS
+#if UNITY_IOS
 
         if(Application.platform == RuntimePlatform.IPhonePlayer)
         {
             return getVerticalAccuracyMeters();
         }
 
-        #elif UNITY_ANDROID
-        
-            return (float) Get(NativeAndroidFunction.GET_VERTICAL_ACCURACY_METERS);
-        
-        #endif
+#elif UNITY_ANDROID
+
+        return (float)Get(NativeAndroidFunction.GET_VERTICAL_ACCURACY_METERS);
+
+#endif
 
         return 0;
     }
@@ -355,7 +382,7 @@ public class NativeGPSPlugin : MonoBehaviour
         float v = (float)Get(NativeAndroidFunction.GET_HEADING) * Mathf.Rad2Deg;
 
         //Convert 0 to 360
-        if ( v < 0 )
+        if (v < 0)
         {
             v += 360;
         }
@@ -367,23 +394,46 @@ public class NativeGPSPlugin : MonoBehaviour
         return 0;
     }
 
-    public static float GetHeadingAccuracy()
+    public static eHeadingAccuracy GetHeadingAccuracy()
     {
 #if UNITY_IOS
 
-        if(Application.platform == RuntimePlatform.IPhonePlayer)
-        {
-            return getHeadingAccuracy();
-        }
+            if (Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                float v = getHeadingAccuracy();
+                eHeadingAccuracy accuracy = default;
+
+                if (v < 0)
+                {
+                    accuracy = eHeadingAccuracy.DISAVAILABLE;
+                }
+                else if (v == 0)
+                {
+                    accuracy = eHeadingAccuracy.UNRELIABLE;
+                }
+                else if ( v < 30 )
+                {
+                    accuracy = eHeadingAccuracy.HIGH;
+                }
+                else if ( v < 70 )
+                {
+                    accuracy = eHeadingAccuracy.MIDDLE;
+                }
+                else
+                {
+                    accuracy = eHeadingAccuracy.LOW;
+                }
+
+                return accuracy;
+            }
 
 #elif UNITY_ANDROID
 
-        return (int)Get(NativeAndroidFunction.GET_HEADING_ACCURACY);
+        return (eHeadingAccuracy)((int)Get(NativeAndroidFunction.GET_HEADING_ACCURACY));
 #endif
 
         return 0;
     }
-
 
     #endregion
 
@@ -394,19 +444,19 @@ public class NativeGPSPlugin : MonoBehaviour
     {
         Instance.Awake();
 
-        if(!Input.location.isEnabledByUser)
+        if (!Input.location.isEnabledByUser)
         {
             return 0;
         }
-        
-        if(Application.platform == RuntimePlatform.Android)
+
+        if (Application.platform == RuntimePlatform.Android)
         {
-            switch(functionName)
+            switch (functionName)
             {
                 case NativeAndroidFunction.GET_LONGITUDE:
                     return obj.CallStatic<double>("getLongitude");
                 case NativeAndroidFunction.GET_LATITUDE:
-                    return obj.CallStatic<double>("getLatitude");                
+                    return obj.CallStatic<double>("getLatitude");
                 case NativeAndroidFunction.GET_ACCURACY:
                     return obj.CallStatic<float>("getAccuracy");
                 case NativeAndroidFunction.GET_ALTITUDE:

@@ -19,7 +19,7 @@ public class GPSLoggerMap : MonoBehaviour
 
     public void OnActionGPSData ( STGeoData _data )
     {
-        Vector2d gps = new Vector2d(_data.lng, _data.lat);
+        Vector2d gps = new Vector2d(_data.longitude, _data.latitude);
         SetViewDirection(gps);
 
         map.Location = gps;
@@ -86,7 +86,7 @@ public class GPSLoggerMap : MonoBehaviour
 
     protected Vector2d calculateGpsPosition (STGeoData _data )
     {
-        return new Vector2d(_data.lng, _data.lat);
+        return new Vector2d(_data.longitude, _data.latitude);
     }
 
 

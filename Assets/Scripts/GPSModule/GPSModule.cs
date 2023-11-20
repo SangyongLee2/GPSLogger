@@ -10,57 +10,83 @@ using System.Text;
 
 public struct STGeoData
 {
-    public long timeStamp;
+    public long timestamp;
     public int sequence;
-    public double lat;
-    public double lng;
+    public double latitude;
+    public double longitude;
     public double alt;
     public float speed;
-    public float acc;
-    public float accV;
+    public float horizontalAccuracy;
+    public float verticalAccuracy;
     public float accS;
 
-    public STGeoData ( long _timeStamp, int _sequence, double _lat, double _lng, double _alt, float _speed, float _acc, float _accV, float _accS )
+    public STGeoData(long _timeStamp, int _sequence, double _lat, double _lng, double _alt, float _speed, float _acc, float _accV, float _accS)
     {
-        timeStamp = _timeStamp;
+        timestamp = _timeStamp;
         sequence = _sequence;
-        lat = _lat;
-        lng = _lng;
+        latitude = _lat;
+        longitude = _lng;
         alt = _alt;
         speed = _speed;
-        acc = _acc;
-        accV = _accV;
+        horizontalAccuracy = _acc;
+        verticalAccuracy = _accV;
         accS = _accS;
     }
-    
 
-    public static bool operator == ( STGeoData _v1, STGeoData _v2 )
+
+    public static bool operator ==(STGeoData _v1, STGeoData _v2)
     {
-        return _v1.lat == _v2.lat && _v1.lng == _v2.lng;
+        return _v1.latitude == _v2.latitude && _v1.longitude == _v2.longitude;
     }
 
-    public static bool operator != ( STGeoData _v1, STGeoData _v2 )
+    public static bool operator !=(STGeoData _v1, STGeoData _v2)
     {
-        return _v1.lat != _v2.lat || _v1.lng != _v2.lng;
+        return _v1.latitude != _v2.latitude || _v1.longitude != _v2.longitude;
+    }
+
+
+    public bool IsSameCoord(double _lat, double _lng)
+    {
+        return latitude == _lat && longitude == _lng;
+    }
+
+
+    public void Debug()
+    {
+        UnityEngine.Debug.Log("Lat = " + latitude + " / Lng = " + longitude + " / Timestamp = " + timestamp);
     }
 }
 
 
+public struct STHeadingData
+{
+    public eHeadingAccuracy accuracy;
+    public float heading;
+
+
+    public STHeadingData(eHeadingAccuracy _accuracy, float _heading)
+    {
+        accuracy = _accuracy;
+        heading = _heading;
+    }
+}
+
+public enum eGPSStatus
+{
+    WAIT = 0,
+    INITIALIZING,
+    TIME_OUT,
+    RUNNING,
+    STOP,
+    DISABLE,
+    FAILED,
+    COUNT
+}
 
 
 public class GPSModule : MonoBehaviour
 {
-    public enum eGPSStatus
-    {
-        WAIT = 0,
-        INITIALIZING,
-        TIME_OUT,
-        RUNNING,
-        STOP,
-        FAILED,
-        COUNT
-    }
-
+    protected bool bInitialized;
 
     public Action<eGPSStatus> ACTION_GPS_STATUS;
     public Action<STGeoData> ACTION_GPS_GEODATA;
@@ -70,11 +96,13 @@ public class GPSModule : MonoBehaviour
 
     protected STGeoData mGeoDataPrev;
     protected STGeoData mGeoDataCurr;
-    
+
     public eGPSStatus status { get { return mStatus; } }
     public STGeoData geoDataCurrent { get { return mGeoDataCurr; } }
-    public STGeoData geoDataPrev {  get { return mGeoDataPrev; } }
+    public STGeoData geoDataPrev { get { return mGeoDataPrev; } }
 
+    protected STHeadingData mHeadingDataCurr;
+    public STHeadingData headingDataCurrent { get { return mHeadingDataCurr; } }
 
     private void Awake()
     {
@@ -83,37 +111,38 @@ public class GPSModule : MonoBehaviour
 
 
 
-    public void StartGPS ()
+    public void StartGPS()
     {
-        NativeGPSPlugin.Initialize();
-        StartCoroutine("IE_GPSModule");
+        if (bInitialized == false)
+        {
+            bInitialized = true;
+            NativeGPSPlugin.Initialize(StartGPS);
+        }
+        else
+        {
+            StartCoroutine("IE_GPSModule");
+        }
     }
 
 
 
 
-    protected IEnumerator IE_GPSModule ()
+    protected IEnumerator IE_GPSModule()
     {
-
-        WaitForSeconds ws = new WaitForSeconds(1.0f);
+        WaitForSeconds ws = new WaitForSeconds(0.1f);
 
         SetGPSStatus(eGPSStatus.INITIALIZING);
 
         NativeGPSPlugin.StartLocation();
         mLocationServiceIsReady = NativeGPSPlugin.HasUserAuthorize();
 
-        yield return new WaitForSeconds(0.1f);
-
+        yield return null;
 
         if (mLocationServiceIsReady == false)
         {
             SetGPSStatus(eGPSStatus.FAILED);
             yield break;
         }
-        else
-        {
-            SetGPSStatus(eGPSStatus.RUNNING);
-        }        
 
         while (mLocationServiceIsReady)
         {
@@ -124,19 +153,45 @@ public class GPSModule : MonoBehaviour
     }
 
 
-    protected void updateGPS ()
+    protected void updateGPS()
     {
-        if ( mLocationServiceIsReady == true )
+        if (mLocationServiceIsReady == true)
         {
 
-            if ( NativeGPSPlugin.IsEnableGPS() == false )
+            if (NativeGPSPlugin.IsEnableGPS() == false)
+            {
+                SetGPSStatus(eGPSStatus.DISABLE);
+
+                //Debug.Log("GPS 비활성화");
+                return;
+            }
+
+
+            long timeStamp = NativeGPSPlugin.GetTimestamp();
+
+            long timePrev = (long)mGeoDataCurr.timestamp;
+            long timeCurr = (long)timeStamp;
+
+            if (timePrev == timeCurr)
             {
                 return;
             }
 
-            long timeStamp = NativeGPSPlugin.GetTimestamp();
+            SetGPSStatus(eGPSStatus.RUNNING);
+
             double lat = NativeGPSPlugin.GetLatitude();
             double lng = NativeGPSPlugin.GetLongitude();
+
+            //소수점 5번째 자리수만 표시, 반올림
+            lat = Math.Round(lat, 5);
+            lng = Math.Round(lng, 5);
+
+            if (mGeoDataCurr.IsSameCoord(lat, lng))
+            {
+                //Debug.Log("GPS 같은 위치");
+                return;
+            }
+
             double alt = NativeGPSPlugin.GetAltitude();
             float acc = NativeGPSPlugin.GetAccuracy();
             float accV = NativeGPSPlugin.GetVerticalAccuracyMeters();
@@ -144,57 +199,65 @@ public class GPSModule : MonoBehaviour
             float accS = NativeGPSPlugin.GetSpeedAccuracyMetersPerSecond();
 
 
-            //소수점 5번째 자리수만 표시, 반올림
-            lat = Math.Round(lat, 5);
-            lng = Math.Round(lng, 5);
-
-#if UNITY_IOS
-
-            long timePrev = (long)mGeoDataPrev.timeStamp;
-            long timeCurr = (long)timeStamp;
-
-            if ( timePrev == timeCurr )
-            {
-                return;
-            }
-
-
-#elif UNITY_ANDROID
-
-            //return 0;
-#endif
-
             STGeoData data = new STGeoData(timeStamp, 0, lat, lng, alt, acc, accV, speed, accS);
 
-            if ( ACTION_GPS_GEODATA != null && ACTION_GPS_GEODATA.GetInvocationList().Length > 0 )
+            if (ACTION_GPS_GEODATA != null && ACTION_GPS_GEODATA.GetInvocationList().Length > 0)
             {
                 ACTION_GPS_GEODATA(data);
             }
 
-            mGeoDataPrev = data;
+            mGeoDataPrev = mGeoDataCurr;
+            mGeoDataCurr = data;
 
+            mGeoDataCurr.Debug();
+        }
+    }
+
+
+
+    protected void updateHeading()
+    {
+        if (mLocationServiceIsReady == true)
+        {
+            eHeadingAccuracy accuracy = NativeGPSPlugin.GetHeadingAccuracy();
+            float heading = NativeGPSPlugin.GetHeading();
+
+            mHeadingDataCurr = new STHeadingData(accuracy, heading);
         }
     }
 
 
 
 
-    protected void SetGPSStatus ( eGPSStatus _status )
+    protected void SetGPSStatus(eGPSStatus _status)
     {
-        if ( mStatus == _status )
+        if (mStatus == _status)
         {
             return;
         }
 
         mStatus = _status;
 
-        //textStatus.text = _status.ToString();
-
         if (ACTION_GPS_STATUS != null && ACTION_GPS_STATUS.GetInvocationList().Length > 0)
         {
             ACTION_GPS_STATUS(mStatus);
         }
 
+    }
+
+
+    public void StopGPS()
+    {
+        StopCoroutine("IE_GPSModule");
+
+        mStatus = eGPSStatus.STOP;
+        NativeGPSPlugin.StopLocation();
+    }
+
+
+    public void OnDestroy()
+    {
+        NativeGPSPlugin.Destroy();
     }
 
 }

@@ -169,7 +169,7 @@ public class GPSLoggerManager : MonoBehaviour
     }
 
 
-    protected void OnActionGPSStatus ( GPSModule.eGPSStatus _status )
+    protected void OnActionGPSStatus ( eGPSStatus _status )
     {
         gpsLoggerUI.OnActionGPSStatus(_status);
     }

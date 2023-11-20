@@ -123,7 +123,7 @@ public class GPSLoggerUI : MonoBehaviour
     }
 
 
-    public void OnActionGPSStatus ( GPSModule.eGPSStatus _status )
+    public void OnActionGPSStatus ( eGPSStatus _status )
     {
         Debug.Log("#onActionGPSStatus: " + _status.ToString());
         textStatus.text = _status.ToString();
@@ -149,17 +149,17 @@ public class GPSLoggerUI : MonoBehaviour
                 return;
             }
 
-            timeGap = _data.timeStamp - mCurrentGeoData.timeStamp;
-            posGapH = _data.lat - mCurrentGeoData.lat;
-            posGapV = _data.lng - mCurrentGeoData.lng;
+            timeGap = _data.timestamp - mCurrentGeoData.timestamp;
+            posGapH = _data.latitude - mCurrentGeoData.latitude;
+            posGapV = _data.longitude - mCurrentGeoData.longitude;
         }
 
 
-        textTimestamp.text = string.Format("{0}", _data.timeStamp);
-        textGeocoord.text = string.Format("{0}, {1}", _data.lat, _data.lng);
+        textTimestamp.text = string.Format("{0}", _data.timestamp);
+        textGeocoord.text = string.Format("{0}, {1}", _data.latitude, _data.longitude);
         textAltitude.text = string.Format("{0}", _data.alt);
         textSpeed.text = string.Format("{0}", _data.speed);
-        textAccGeocoord.text = string.Format("{0}, {1}", _data.acc, _data.accV);
+        textAccGeocoord.text = string.Format("{0}, {1}", _data.horizontalAccuracy, _data.verticalAccuracy);
         textAccSpeed.text = string.Format("{0}", _data.accS);
         textTimeGap.text = string.Format("{0}", timeGap);
         textPosGap.text = string.Format("{0}, {1}", posGapH, posGapV);
